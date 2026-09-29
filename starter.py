@@ -73,3 +73,36 @@ print("Logical AND:", z)
 #  Logical OR
 resultado = a or b
 print(resultado)
+
+# Comparison Operators
+x = 15
+y = 25
+
+print(x == y)   # Igual
+print(x != y)   # Diferente
+print(x > y)    # Mayor que
+print(x < y)    # Menor que
+print(x >= y)   # Mayor o igual
+print(x <= y)   # Menor o igual
+
+
+# Type Checking
+price = 49.99
+print(type(price))
+
+#  String Length
+word = "Python"
+print(len(word))
+
+#  String to Float Conversion
+height_str = "180.5"
+height = float(height_str)
+print(height)
+
+#  Boolean Conversion
+zero = 0
+non_zero = 5
+
+print(bool(zero))
+print(bool(non_zero))
+

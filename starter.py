@@ -1,0 +1,75 @@
+print("Hello, World!")
+
+x = 10 
+print(x)
+
+y = 10.5
+print(y)
+
+
+Z = x + y  # 20.5
+print(Z)
+
+x = "nu är " + "en sträng"
+print(x)
+
+# Basic Variable Assignment 
+city = "New York"
+print("I Love " + city)
+
+# Integer and Float Variables
+
+length = 45
+width = 20.5
+area = length * width
+print("Area of rectangle: " + str(area))
+
+# Type Conversion
+
+num = 100
+result = str(num) + " is now a string"
+print(result)
+
+ # Boolean Variable - with a slight change in the code
+is_open = False
+import random 
+is_open = random.choice([True, False])
+print("Is the store open? " + str(is_open))
+
+# Arithmetic Operations
+buy_price = 50
+sell_price = 75
+profit = sell_price - buy_price
+print("Profit: " + str(profit))
+
+# Division and Modulus
+dividend = 20
+divisor = 3
+quotient = dividend // divisor
+remainder = dividend % divisor
+print("Quotient: " + str(quotient))
+print("Remainder: " + str(remainder))
+
+# Exponentiation 
+base = 4
+exponente = 3
+
+resultado = base ** exponente
+print("Potencia:", resultado)
+
+# Example 2
+a = 17
+b = 5
+
+resto = a % b
+print("Resto:", resto)
+
+# Logical AND
+x = True
+y = False
+z = x and y
+print("Logical AND:", z)
+
+#  Logical OR
+resultado = a or b
+print(resultado)

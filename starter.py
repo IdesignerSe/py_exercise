@@ -156,6 +156,8 @@ my_list_1 = my_list [::-1]
 print(my_list_1)
 
 """
+
+""" 
 # 1. Temperature Check 
 temp = 28
 
@@ -291,3 +293,13 @@ if is_prime:
     print("Prime")
 else:
     print("Not Prime")
+
+ """ 
+
+# 1. BREAK STATEMENT
+
+for i in range(1, 11):
+    if i == 7:
+        break
+    print(i)
+

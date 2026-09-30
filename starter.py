@@ -106,3 +106,49 @@ non_zero = 5
 print(bool(zero))
 print(bool(non_zero))
 
+# Declaring an integer variable 
+age = 25 
+print(age)  # Output: 25
+
+# Declaring a floating-point variable 
+price = 19.99 
+print(price)  # Output: 19.99  
+
+# Declaring a string variable 
+name = "Alice" 
+print(name)  # Output: Alice 
+
+# Declaring a boolean variable 
+is_student = True 
+print(is_student)  # Output: True
+
+# Converting between types 
+num = 10 
+print(float(num))  # Output: 10.0 
+
+ 
+text = "123" 
+print(int(text))  # Output: 123 
+
+
+value = 0 
+print(bool(value))  # Output: False
+
+my_list = []
+print(type(my_list))
+my_list.append("Saludos")
+my_list.append("a todos")
+my_list.append("los estudiantes")
+my_list.append(100)
+my_list.append(3.14)
+my_list.append(True)
+print(my_list.append(type(100)))
+print(my_list)
+
+my_list_1 = my_list [:]
+my_list_1 = my_list [0:4]
+my_list_1 = my_list [0:4:2]
+my_list_1 = my_list [::2]
+my_list_1 = my_list [::-1]
+
+print(my_list_1)

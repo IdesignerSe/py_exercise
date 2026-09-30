@@ -1,3 +1,5 @@
+""" This is a simple Python script 
+
 print("Hello, World!")
 
 x = 10 
@@ -152,3 +154,140 @@ my_list_1 = my_list [::2]
 my_list_1 = my_list [::-1]
 
 print(my_list_1)
+
+"""
+# 1. Temperature Check 
+temp = 28
+
+if temp > 30:
+    print("Hot")
+elif 20 <= temp <= 30:
+    print("Warm")
+else:
+    print("Cold")
+
+
+# 2. Even or Odd 
+num = 7
+
+if num % 2 == 0:
+    print("Even")
+else:
+    print("Odd")
+
+#3. Leap Year Check
+year = 2024
+
+if year % 400 == 0:
+    print("Leap Year")
+elif year % 100 == 0:
+    print("Not a Leap Year")
+elif year % 4 == 0:
+    print("Leap Year")
+else:
+    print("Not a Leap Year")
+
+# 4. Age Group
+age = 17
+
+if age < 13:
+    print("Child")
+elif age < 18:
+    print("Teenager")
+elif age < 65:
+    print("Adult")
+else:
+    print("Senior")
+
+# 5. Positive, Negative, or Zero
+
+number = -5
+if number > 0:
+    print("Positive")
+elif number < 0:
+    print("Negative")
+else:
+    print("Zero")
+
+# 6. For Loop: Sum of Numbers (1 to 10)
+total = 0
+for i in range(1, 11):
+    total += i      
+
+print("Sum of numbers from 1 to 10:", total)
+
+# 7. For Loop: Multiplication Table of 5
+for i in range(1, 11):
+    print(f"5 x {i} = {5 * i}") 
+
+# 8. While Loop: Countdown (10 to 1)
+count = 10
+while count > 0:
+    print(count)
+    count -= 1
+print("Countdown finished!")
+
+# 9. While Loop: Sum of Even Numbers (1 to 20)
+total = 0
+num = 1
+
+while num <= 20:
+    if num % 2 == 0:
+        total += num
+    num += 1    
+print("Sum of even numbers from 1 to 20:", total)
+
+# 10. For Loop: Print Characters of a String
+word = "Python"
+for char in word:
+    print(char)
+
+# 11. Nested Loop: Multiplication Tables (1 to 3)
+for i in range(1, 4):
+    print(f"Multiplication Table for {i}:")
+    for j in range(1, 11):
+        print(f"{i} x {j} = {i * j}")
+    print()  # Print a blank line after each table
+
+for i in range(1, 4):
+    for j in range(1, 11):
+        print(i, "x", j, "=", i * j)
+    print()  # separación
+
+# 12. Break Statement (stop at 7)
+for i in range(1, 11):
+    if i == 7:
+        break
+    print(i)
+
+# 13. Continue Statement (skip 5)
+for i in range(1, 11):
+    if i == 5:
+        continue
+    print(i)
+
+# 14. If-Statement with Logical Operators
+is_weekend = True
+is_holiday = False
+
+if is_weekend or is_holiday:
+    print("Day off")
+else:
+    print("Workday")
+
+# 15. Prime Number Check
+num = 11
+is_prime = True
+
+if num <= 1:
+    is_prime = False
+else:
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            is_prime = False
+            break
+
+if is_prime:
+    print("Prime")
+else:
+    print("Not Prime")

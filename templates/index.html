@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mini IA Heb</title>
+</head>
+<body>
+    <h1>Mini IA con Qwen3</h1>
+
+    <form method="POST">
+        <textarea name="user_text" rows="5" cols="50" placeholder="Escribe aquí..."></textarea><br><br>
+
+        <button name="mode" value="chat">Chatbot</button>
+        <button name="mode" value="analyze">Analizar Texto</button>
+        <button name="mode" value="code">Generar Código</button>
+    </form>
+
+    <h2>Resultado:</h2>
+    <p>{{ result }}</p>
+</body>
+</html>

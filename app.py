@@ -13,12 +13,15 @@ def ask_model(prompt):
 @app.route("/", methods=["GET", "POST"])
 def home():
     result = ""
+    user_text = ""
+
     if request.method == "POST":
         user_text = request.form["user_text"]
         mode = request.form["mode"]
 
         if mode == "chat":
             result = ask_model(user_text)
+
         elif mode == "analyze":
             prompt = f"""
 Analiza este texto:
@@ -31,6 +34,7 @@ Dame:
 - explicación breve
 """
             result = ask_model(prompt)
+
         elif mode == "code":
             prompt = f"""
 Genera código según esta instrucción:
@@ -40,7 +44,7 @@ Incluye explicación y código funcional.
 """
             result = ask_model(prompt)
 
-    return render_template("index.html", result=result)
+    return render_template("index.html", result=result, user_text=user_text)
 
 if __name__ == "__main__":
     app.run(debug=True)

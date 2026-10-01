@@ -1,20 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Mini IA Heb</title>
+
+    <!-- Bootstrap CSS -->
+    <link 
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+        rel="stylesheet"
+    >
+
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+        .container-box {
+            max-width: 800px;
+            margin-top: 40px;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .bubble-question {
+            background: #e7f1ff;
+            border-left: 4px solid #0d6efd;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .bubble-answer {
+            background: #e8f8ec;
+            border-left: 4px solid #198754;
+            padding: 12px;
+            border-radius: 8px;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Mini IA con Qwen3</h1>
+    <div class="container d-flex justify-content-center">
+        <div class="container-box">
 
-    <form method="POST">
-        <textarea name="user_text" rows="5" cols="50" placeholder="Escribe aquí..."></textarea><br><br>
+            <h2 class="text-center mb-4">Mini IA con Qwen3</h2>
 
-        <button name="mode" value="chat">Chatbot</button>
-        <button name="mode" value="analyze">Analizar Texto</button>
-        <button name="mode" value="code">Generar Código</button>
-    </form>
+            <form method="POST">
+                <textarea 
+                    name="user_text" 
+                    class="form-control mb-3" 
+                    rows="5" 
+                    placeholder="Escribe aquí..."
+                ></textarea>
 
-    <h2>Resultado:</h2>
-    <p>{{ result }}</p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <button name="mode" value="chat" class="btn btn-primary">Chatbot</button>
+                    <button name="mode" value="analyze" class="btn btn-warning">Analizar Texto</button>
+                    <button name="mode" value="code" class="btn btn-success">Generar Código</button>
+                </div>
+            </form>
+
+            <hr class="my-4">
+
+            <h4>Resultado:</h4>
+
+            <!-- Mostrar pregunta -->
+            {% if user_text %}
+            <div class="bubble-question">
+                <strong>Tu pregunta:</strong>
+                <p>{{ user_text }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Mostrar respuesta -->
+            {% if result %}
+            <div class="bubble-answer">
+                <strong>Respuesta:</strong>
+                <p>{{ result }}</p>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script 
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
+    </script>
 </body>
 </html>

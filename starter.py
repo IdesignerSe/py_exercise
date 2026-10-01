@@ -296,10 +296,33 @@ else:
 
  """ 
 
+
+""" 
 # 1. BREAK STATEMENT
 
 for i in range(1, 11):
     if i == 7:
         break
     print(i)
+
+# 2. CONTINUE STATEMENT
+for i in range(10):
+    if i % 2 == 0:
+        continue
+    print(i)
+
+
+# 3. NESTED LOOPS (Loops dentro de loops)
+
+for i in range(3):
+    for j in range(3):
+        print(f"i: {i}, j: {j}")
+
+"""
+
+
+# 1. Create a List
+fruits = ["apple", "banana", "cherry"]
+print(fruits)
+
 

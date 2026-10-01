@@ -326,3 +326,8 @@ fruits = ["apple", "banana", "cherry"]
 print(fruits)
 
 
+# 2. Access List Items
+fruits = ["apple", "banana", "cherry"]
+print(fruits[1])   # second item
+
+#

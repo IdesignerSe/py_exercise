@@ -2,7 +2,7 @@
 import ollama
 
 response = ollama.generate(
-    model="qwen3:0.6b",
+    model="llama3.1:8b",
     prompt="Hola Heb, probando Ollama desde Python."
 )
 

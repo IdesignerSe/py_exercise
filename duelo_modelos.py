@@ -8,8 +8,27 @@ def modelo_a_responde(pregunta):
     return respuesta["response"]
 
 def modelo_b_evalua(respuesta_a):
-    # Se implementará en el siguiente paso
-    pass
+    prompt_evaluacion = f"""
+Evalúa la siguiente respuesta generada por otro modelo:
+
+RESPUESTA DEL MODELO A:
+{respuesta_a}
+
+Quiero que me digas:
+- Si la explicación es correcta.
+- Si falta algo importante.
+- Si hay errores conceptuales.
+- Cómo mejorarla.
+
+Sé crítico pero justo.
+"""
+
+    evaluacion = ollama.generate(
+        model="qwen3:0.6b",
+        prompt=prompt_evaluacion
+    )
+
+    return evaluacion["response"]
 
 def main():
     print("=== Paso 2: Modelo A responde ===\n")

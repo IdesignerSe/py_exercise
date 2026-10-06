@@ -40,12 +40,21 @@
 
     <!-- NAVBAR -->
     <nav class="navbar navbar-dark bg-dark mb-4">
-        <div class="container d-flex justify-content-between">
-            <span class="navbar-brand mb-0 h1">Duelo entre Modelos AI</span>
+        <div class="container d-flex justify-content-between align-items-center">
+            <span class="navbar-brand mb-0 h1" id="ui_title">Duelo entre Modelos AI</span>
 
-            <button class="btn btn-outline-light" onclick="toggleDarkMode()">
-                🌙 / ☀️
-            </button>
+            <div class="d-flex gap-3">
+                <!-- Selector de idioma -->
+                <select id="selectorIdioma" class="form-select form-select-sm bg-dark text-white" style="width:140px;">
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                    <option value="sv">Svenska</option>
+                </select>
+
+                <button class="btn btn-outline-light" onclick="toggleDarkMode()">
+                    🌙 / ☀️
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -53,9 +62,9 @@
     <div class="container d-flex justify-content-center">
         <div class="container-box">
 
-            <h2 class="text-center mb-4">Comparación entre Llama 3.1 y Qwen 0.6B</h2>
+            <h2 class="text-center mb-4" id="ui_subtitle">Comparación entre Llama 3.1 y Qwen 0.6B</h2>
 
-            <label for="pregunta" class="form-label">Escribe tu pregunta:</label>
+            <label for="pregunta" class="form-label" id="ui_label_question">Escribe tu pregunta:</label>
             <textarea 
                 id="pregunta" 
                 class="form-control mb-3" 
@@ -69,37 +78,45 @@
 
             <!-- RESPUESTA A -->
             <div class="card mt-4">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header bg-primary text-white" id="ui_modelA_title">
                     Respuesta del Modelo A (Llama 3.1)
                 </div>
                 <div class="card-body">
                     <pre id="respuestaA"></pre>
                     <div class="text-muted mt-2">
-                        ⏱ Tiempo: <span id="tiempoA">-</span> s |
-                        🔢 Tokens: <span id="tokensA">-</span> (prompt: <span id="promptTokensA">-</span>)
+                        ⏱ <span id="ui_timeA">Tiempo</span>: <span id="tiempoA">-</span> s |
+                        🔢 <span id="ui_tokensA">Tokens</span>: <span id="tokensA">-</span> 
+                        (<span id="ui_promptTokensA">prompt</span>: <span id="promptTokensA">-</span>)
                     </div>
                 </div>
             </div>
 
             <!-- EVALUACIÓN B -->
             <div class="card mt-4">
-                <div class="card-header bg-warning text-dark">
+                <div class="card-header bg-warning text-dark" id="ui_modelB_title">
                     Evaluación del Modelo B (Qwen 0.6B)
                 </div>
                 <div class="card-body">
                     <pre id="evaluacionB"></pre>
                     <div class="text-muted mt-2">
-                        ⏱ Tiempo: <span id="tiempoB">-</span> s |
-                        🔢 Tokens: <span id="tokensB">-</span> (prompt: <span id="promptTokensB">-</span>)
+                        ⏱ <span id="ui_timeB">Tiempo</span>: <span id="tiempoB">-</span> s |
+                        🔢 <span id="ui_tokensB">Tokens</span>: <span id="tokensB">-</span> 
+                        (<span id="ui_promptTokensB">prompt</span>: <span id="promptTokensB">-</span>)
                     </div>
                 </div>
             </div>
 
+            <!-- IDIOMA DETECTADO -->
+            <div class="text-muted mt-3">
+                🌐 <span id="ui_detected_language">Idioma seleccionado</span>: 
+                <span id="idiomaDetectado">-</span>
+            </div>
+
             <!-- BOTONES DE ACCIÓN -->
             <div id="botones" class="d-flex gap-3 mt-4" style="display:none;">
-                <button onclick="aceptar()" class="btn btn-success btn-lg flex-fill">Aceptar</button>
-                <button onclick="rechazar()" class="btn btn-danger btn-lg flex-fill">Rechazar</button>
-                <button onclick="nuevaRespuesta()" class="btn btn-warning btn-lg flex-fill">Nueva respuesta</button>
+                <button onclick="aceptar()" class="btn btn-success btn-lg flex-fill" id="ui_btn_accept">Aceptar</button>
+                <button onclick="rechazar()" class="btn btn-danger btn-lg flex-fill" id="ui_btn_reject">Rechazar</button>
+                <button onclick="nuevaRespuesta()" class="btn btn-warning btn-lg flex-fill" id="ui_btn_new">Nueva respuesta</button>
             </div>
 
             <!-- MENSAJE -->
@@ -110,7 +127,7 @@
 
     <!-- FOOTER -->
     <footer class="text-center mt-5 mb-3 text-muted">
-        <small>Proyecto IA — Flask + Ollama — IdesignerSe © 2026</small>
+        <small id="ui_footer">Proyecto IA — Flask + Ollama — IdesignerSe © 2026</small>
     </footer>
 
     <!-- Bootstrap JS -->
@@ -120,8 +137,100 @@
 
     <script>
         let ultimaPregunta = "";
+        let idiomaActual = localStorage.getItem("idioma") || "es";
 
-        // DARK MODE TOGGLE
+        // Traducciones
+        const traducciones = {
+            es: {
+                title: "Duelo entre Modelos AI",
+                subtitle: "Comparación entre Llama 3.1 y Qwen 0.6B",
+                question: "Escribe tu pregunta:",
+                send: "Enviar",
+                accept: "Aceptar",
+                reject: "Rechazar",
+                new: "Nueva respuesta",
+                time: "Tiempo",
+                tokens: "Tokens",
+                prompt: "prompt",
+                detected: "Idioma seleccionado",
+                modelA: "Respuesta del Modelo A (Llama 3.1)",
+                modelB: "Evaluación del Modelo B (Qwen 0.6B)",
+                footer: "Proyecto IA — Flask + Ollama — IdesignerSe © 2026"
+            },
+            en: {
+                title: "AI Models Duel",
+                subtitle: "Comparison between Llama 3.1 and Qwen 0.6B",
+                question: "Write your question:",
+                send: "Send",
+                accept: "Accept",
+                reject: "Reject",
+                new: "New answer",
+                time: "Time",
+                tokens: "Tokens",
+                prompt: "prompt",
+                detected: "Selected language",
+                modelA: "Model A Response (Llama 3.1)",
+                modelB: "Model B Evaluation (Qwen 0.6B)",
+                footer: "AI Project — Flask + Ollama — IdesignerSe © 2026"
+            },
+            sv: {
+                title: "AI-modellernas duell",
+                subtitle: "Jämförelse mellan Llama 3.1 och Qwen 0.6B",
+                question: "Skriv din fråga:",
+                send: "Skicka",
+                accept: "Godkänn",
+                reject: "Avvisa",
+                new: "Nytt svar",
+                time: "Tid",
+                tokens: "Tokens",
+                prompt: "prompt",
+                detected: "Valt språk",
+                modelA: "Svar från Modell A (Llama 3.1)",
+                modelB: "Utvärdering av Modell B (Qwen 0.6B)",
+                footer: "AI-projekt — Flask + Ollama — IdesignerSe © 2026"
+            }
+        };
+
+        function aplicarIdioma() {
+            const t = traducciones[idiomaActual];
+
+            document.getElementById("ui_title").textContent = t.title;
+            document.getElementById("ui_subtitle").textContent = t.subtitle;
+            document.getElementById("ui_label_question").textContent = t.question;
+            document.getElementById("btnEnviar").textContent = t.send;
+
+            document.getElementById("ui_btn_accept").textContent = t.accept;
+            document.getElementById("ui_btn_reject").textContent = t.reject;
+            document.getElementById("ui_btn_new").textContent = t.new;
+
+            document.getElementById("ui_timeA").textContent = t.time;
+            document.getElementById("ui_timeB").textContent = t.time;
+
+            document.getElementById("ui_tokensA").textContent = t.tokens;
+            document.getElementById("ui_tokensB").textContent = t.tokens;
+
+            document.getElementById("ui_promptTokensA").textContent = t.prompt;
+            document.getElementById("ui_promptTokensB").textContent = t.prompt;
+
+            document.getElementById("ui_detected_language").textContent = t.detected;
+
+            document.getElementById("ui_modelA_title").textContent = t.modelA;
+            document.getElementById("ui_modelB_title").textContent = t.modelB;
+
+            document.getElementById("ui_footer").textContent = t.footer;
+
+            document.getElementById("selectorIdioma").value = idiomaActual;
+        }
+
+        aplicarIdioma();
+
+        document.getElementById("selectorIdioma").addEventListener("change", () => {
+            idiomaActual = document.getElementById("selectorIdioma").value;
+            localStorage.setItem("idioma", idiomaActual);
+            aplicarIdioma();
+        });
+
+        // DARK MODE
         function toggleDarkMode() {
             const body = document.body;
             const current = body.getAttribute("data-bs-theme");
@@ -132,8 +241,7 @@
         async function enviar() {
             const btnEnviar = document.getElementById("btnEnviar");
 
-            // Cambiar estado del botón
-            btnEnviar.textContent = "Enviando… 🔄";
+            btnEnviar.textContent = traducciones[idiomaActual].send + "… 🔄";
             btnEnviar.disabled = true;
             btnEnviar.classList.remove("btn-primary");
             btnEnviar.classList.add("btn-outline-primary");
@@ -143,7 +251,7 @@
             const res = await fetch("/api/duelo", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pregunta: ultimaPregunta })
+                body: JSON.stringify({ pregunta: ultimaPregunta, idioma: idiomaActual })
             });
 
             const data = await res.json();
@@ -153,11 +261,7 @@
             document.getElementById("botones").style.display = "flex";
             document.getElementById("mensaje").innerHTML = "";
 
-            // Botón Enviar marcado como enviado
-            btnEnviar.textContent = "Enviado ✔";
-
-            // Reset botones secundarios
-            resetButtons();
+            btnEnviar.textContent = traducciones[idiomaActual].send + " ✔";
         }
 
         function actualizarResultados(data) {
@@ -172,73 +276,77 @@
 
             document.getElementById("promptTokensA").textContent = data.prompt_tokens_a;
             document.getElementById("promptTokensB").textContent = data.prompt_tokens_b;
+
+            document.getElementById("idiomaDetectado").textContent = data.idioma;
         }
 
         // Reset botones secundarios
         function resetButtons() {
-            const aceptarBtn = document.querySelector("button[onclick='aceptar()']");
-            const rechazarBtn = document.querySelector("button[onclick='rechazar()']");
-            const nuevaBtn = document.querySelector("button[onclick='nuevaRespuesta()']");
+            const t = traducciones[idiomaActual];
 
-            aceptarBtn.textContent = "Aceptar";
+            const aceptarBtn = document.getElementById("ui_btn_accept");
+            const rechazarBtn = document.getElementById("ui_btn_reject");
+            const nuevaBtn = document.getElementById("ui_btn_new");
+
+            aceptarBtn.textContent = t.accept;
             aceptarBtn.disabled = false;
             aceptarBtn.classList.remove("btn-outline-success");
             aceptarBtn.classList.add("btn-success");
 
-            rechazarBtn.textContent = "Rechazar";
+            rechazarBtn.textContent = t.reject;
             rechazarBtn.disabled = false;
             rechazarBtn.classList.remove("btn-outline-danger");
             rechazarBtn.classList.add("btn-danger");
 
-            nuevaBtn.textContent = "Nueva respuesta";
+            nuevaBtn.textContent = t.new;
             nuevaBtn.disabled = false;
         }
 
         // ACEPTAR
         function aceptar() {
-            const btn = document.querySelector("button[onclick='aceptar()']");
-            btn.textContent = "Aceptado ✔";
+            const btn = document.getElementById("ui_btn_accept");
+            btn.textContent = traducciones[idiomaActual].accept + " ✔";
             btn.classList.remove("btn-success");
             btn.classList.add("btn-outline-success");
             btn.disabled = true;
 
             document.getElementById("mensaje").innerHTML =
-                `<div class="alert alert-success">✔ Respuesta aceptada por el humano responsable.</div>`;
+                `<div class="alert alert-success">✔ ${traducciones[idiomaActual].accept}</div>`;
         }
 
         // RECHAZAR
         function rechazar() {
-            const btn = document.querySelector("button[onclick='rechazar()']");
-            btn.textContent = "Rechazado ✘";
+            const btn = document.getElementById("ui_btn_reject");
+            btn.textContent = traducciones[idiomaActual].reject + " ✘";
             btn.classList.remove("btn-danger");
             btn.classList.add("btn-outline-danger");
             btn.disabled = true;
 
             document.getElementById("mensaje").innerHTML =
-                `<div class="alert alert-danger">✘ Respuesta rechazada. Puedes generar una nueva.</div>`;
+                `<div class="alert alert-danger">✘ ${traducciones[idiomaActual].reject}</div>`;
         }
 
         // NUEVA RESPUESTA
         async function nuevaRespuesta() {
-            const btn = document.querySelector("button[onclick='nuevaRespuesta()']");
-            btn.textContent = "Generando… 🔄";
+            const btn = document.getElementById("ui_btn_new");
+            btn.textContent = traducciones[idiomaActual].new + "… 🔄";
             btn.disabled = true;
 
             const res = await fetch("/api/duelo", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pregunta: ultimaPregunta })
+                body: JSON.stringify({ pregunta: ultimaPregunta, idioma: idiomaActual })
             });
 
             const data = await res.json();
 
             actualizarResultados(data);
 
-            btn.textContent = "Nueva respuesta";
+            btn.textContent = traducciones[idiomaActual].new;
             btn.disabled = false;
 
             document.getElementById("mensaje").innerHTML =
-                `<div class="alert alert-warning">Nueva respuesta generada.</div>`;
+                `<div class="alert alert-warning">${traducciones[idiomaActual].new}</div>`;
         }
     </script>
 

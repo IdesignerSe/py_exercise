@@ -106,7 +106,7 @@
                 </div>
             </div>
 
-            <!-- IDIOMA DETECTADO -->
+            <!-- IDIOMA SELECCIONADO -->
             <div class="text-muted mt-3">
                 🌐 <span id="ui_detected_language">Idioma seleccionado</span>: 
                 <span id="idiomaDetectado">-</span>
@@ -145,6 +145,7 @@
                 title: "Duelo entre Modelos AI",
                 subtitle: "Comparación entre Llama 3.1 y Qwen 0.6B",
                 question: "Escribe tu pregunta:",
+                placeholder: "Escribe aquí tu pregunta...",
                 send: "Enviar",
                 accept: "Aceptar",
                 reject: "Rechazar",
@@ -161,6 +162,7 @@
                 title: "AI Models Duel",
                 subtitle: "Comparison between Llama 3.1 and Qwen 0.6B",
                 question: "Write your question:",
+                placeholder: "Write your question here...",
                 send: "Send",
                 accept: "Accept",
                 reject: "Reject",
@@ -177,6 +179,7 @@
                 title: "AI-modellernas duell",
                 subtitle: "Jämförelse mellan Llama 3.1 och Qwen 0.6B",
                 question: "Skriv din fråga:",
+                placeholder: "Skriv din fråga här...",
                 send: "Skicka",
                 accept: "Godkänn",
                 reject: "Avvisa",
@@ -197,6 +200,7 @@
             document.getElementById("ui_title").textContent = t.title;
             document.getElementById("ui_subtitle").textContent = t.subtitle;
             document.getElementById("ui_label_question").textContent = t.question;
+            document.getElementById("pregunta").placeholder = t.placeholder;
             document.getElementById("btnEnviar").textContent = t.send;
 
             document.getElementById("ui_btn_accept").textContent = t.accept;

@@ -12,8 +12,13 @@ def modelo_b_evalua(respuesta_a):
     pass
 
 def main():
-    print("Sistema de duelo entre modelos — Paso 1 completado.")
-    print("Aún no hay lógica, solo estructura base.")
+    print("=== Paso 2: Modelo A responde ===\n")
+
+    pregunta = "Explica brevemente qué es la teoría de conjuntos."
+    respuesta_a = modelo_a_responde(pregunta)
+
+    print("Pregunta:", pregunta, "\n")
+    print("Respuesta del Modelo A:\n", respuesta_a)
 
 if __name__ == "__main__":
     main()

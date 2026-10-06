@@ -63,7 +63,7 @@
                 placeholder="Escribe aquí tu pregunta..."
             ></textarea>
 
-            <button onclick="enviar()" class="btn btn-primary btn-lg w-100 mb-4">
+            <button id="btnEnviar" onclick="enviar()" class="btn btn-primary btn-lg w-100 mb-4">
                 Enviar
             </button>
 
@@ -74,6 +74,10 @@
                 </div>
                 <div class="card-body">
                     <pre id="respuestaA"></pre>
+                    <div class="text-muted mt-2">
+                        ⏱ Tiempo: <span id="tiempoA">-</span> s |
+                        🔢 Tokens: <span id="tokensA">-</span> (prompt: <span id="promptTokensA">-</span>)
+                    </div>
                 </div>
             </div>
 
@@ -84,6 +88,10 @@
                 </div>
                 <div class="card-body">
                     <pre id="evaluacionB"></pre>
+                    <div class="text-muted mt-2">
+                        ⏱ Tiempo: <span id="tiempoB">-</span> s |
+                        🔢 Tokens: <span id="tokensB">-</span> (prompt: <span id="promptTokensB">-</span>)
+                    </div>
                 </div>
             </div>
 
@@ -102,7 +110,7 @@
 
     <!-- FOOTER -->
     <footer class="text-center mt-5 mb-3 text-muted">
-        <small>Proyecto IA — Flask + Ollama — Heb © 2026</small>
+        <small>Proyecto IA — Flask + Ollama — IdesignerSe © 2026</small>
     </footer>
 
     <!-- Bootstrap JS -->
@@ -122,6 +130,14 @@
 
         // ENVIAR PREGUNTA
         async function enviar() {
+            const btnEnviar = document.getElementById("btnEnviar");
+
+            // Cambiar estado del botón
+            btnEnviar.textContent = "Enviando… 🔄";
+            btnEnviar.disabled = true;
+            btnEnviar.classList.remove("btn-primary");
+            btnEnviar.classList.add("btn-outline-primary");
+
             ultimaPregunta = document.getElementById("pregunta").value;
 
             const res = await fetch("/api/duelo", {
@@ -132,27 +148,82 @@
 
             const data = await res.json();
 
-            document.getElementById("respuestaA").textContent = data.respuesta_a;
-            document.getElementById("evaluacionB").textContent = data.evaluacion_b;
+            actualizarResultados(data);
 
             document.getElementById("botones").style.display = "flex";
             document.getElementById("mensaje").innerHTML = "";
+
+            // Botón Enviar marcado como enviado
+            btnEnviar.textContent = "Enviado ✔";
+
+            // Reset botones secundarios
+            resetButtons();
+        }
+
+        function actualizarResultados(data) {
+            document.getElementById("respuestaA").textContent = data.respuesta_a;
+            document.getElementById("evaluacionB").textContent = data.evaluacion_b;
+
+            document.getElementById("tiempoA").textContent = data.tiempo_a.toFixed(2);
+            document.getElementById("tiempoB").textContent = data.tiempo_b.toFixed(2);
+
+            document.getElementById("tokensA").textContent = data.tokens_a;
+            document.getElementById("tokensB").textContent = data.tokens_b;
+
+            document.getElementById("promptTokensA").textContent = data.prompt_tokens_a;
+            document.getElementById("promptTokensB").textContent = data.prompt_tokens_b;
+        }
+
+        // Reset botones secundarios
+        function resetButtons() {
+            const aceptarBtn = document.querySelector("button[onclick='aceptar()']");
+            const rechazarBtn = document.querySelector("button[onclick='rechazar()']");
+            const nuevaBtn = document.querySelector("button[onclick='nuevaRespuesta()']");
+
+            aceptarBtn.textContent = "Aceptar";
+            aceptarBtn.disabled = false;
+            aceptarBtn.classList.remove("btn-outline-success");
+            aceptarBtn.classList.add("btn-success");
+
+            rechazarBtn.textContent = "Rechazar";
+            rechazarBtn.disabled = false;
+            rechazarBtn.classList.remove("btn-outline-danger");
+            rechazarBtn.classList.add("btn-danger");
+
+            nuevaBtn.textContent = "Nueva respuesta";
+            nuevaBtn.disabled = false;
         }
 
         // ACEPTAR
         function aceptar() {
+            const btn = document.querySelector("button[onclick='aceptar()']");
+            btn.textContent = "Aceptado ✔";
+            btn.classList.remove("btn-success");
+            btn.classList.add("btn-outline-success");
+            btn.disabled = true;
+
             document.getElementById("mensaje").innerHTML =
                 `<div class="alert alert-success">✔ Respuesta aceptada por el humano responsable.</div>`;
         }
 
         // RECHAZAR
         function rechazar() {
+            const btn = document.querySelector("button[onclick='rechazar()']");
+            btn.textContent = "Rechazado ✘";
+            btn.classList.remove("btn-danger");
+            btn.classList.add("btn-outline-danger");
+            btn.disabled = true;
+
             document.getElementById("mensaje").innerHTML =
                 `<div class="alert alert-danger">✘ Respuesta rechazada. Puedes generar una nueva.</div>`;
         }
 
         // NUEVA RESPUESTA
         async function nuevaRespuesta() {
+            const btn = document.querySelector("button[onclick='nuevaRespuesta()']");
+            btn.textContent = "Generando… 🔄";
+            btn.disabled = true;
+
             const res = await fetch("/api/duelo", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -161,8 +232,10 @@
 
             const data = await res.json();
 
-            document.getElementById("respuestaA").textContent = data.respuesta_a;
-            document.getElementById("evaluacionB").textContent = data.evaluacion_b;
+            actualizarResultados(data);
+
+            btn.textContent = "Nueva respuesta";
+            btn.disabled = false;
 
             document.getElementById("mensaje").innerHTML =
                 `<div class="alert alert-warning">Nueva respuesta generada.</div>`;

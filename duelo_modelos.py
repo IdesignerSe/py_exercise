@@ -8,7 +8,7 @@ def modelo_a_responde(pregunta):
     return respuesta["response"]
 
 def modelo_b_evalua(respuesta_a):
-    # Aquí luego pondremos el modelo B
+    # Se implementará en el siguiente paso
     pass
 
 def main():

@@ -31,7 +31,7 @@ Pregunta:
 
 
 # ============================================================
-# MODELO B: evalúa (Qwen 0.6B) — MULTILINGÜE REAL
+# MODELO B: evalúa (Qwen 0.6B) — MULTILINGÜE + MÉTRICAS + RAZONAMIENTO
 # ============================================================
 def modelo_b_evalua(respuesta_a_texto, idioma):
 
@@ -43,11 +43,25 @@ Responde en español.
 RESPUESTA DEL MODELO A:
 {respuesta_a_texto}
 
-Quiero que me digas:
-- Si la explicación es correcta.
-- Si falta algo importante.
-- Si hay errores conceptuales.
-- Cómo mejorarla.
+Dame:
+
+1. Si la explicación es correcta.
+2. Si falta algo importante.
+3. Si hay errores conceptuales.
+4. Cómo mejorarla.
+
+5. Un panel de calidad con:
+   - claridad (0–10)
+   - precisión (0–10)
+   - profundidad (0–10)
+   - relevancia (0–10)
+   - score total (promedio)
+
+6. Un detector de alucinaciones:
+   - score (0–10)
+   - explicación de qué parte parece inventada
+
+7. Explica tu razonamiento paso a paso.
 """,
 
         "en": f"""
@@ -57,11 +71,25 @@ Respond in English.
 RESPONSE FROM MODEL A:
 {respuesta_a_texto}
 
-Tell me:
-- If the explanation is correct.
-- If something important is missing.
-- If there are conceptual errors.
-- How to improve it.
+Give me:
+
+1. Whether the explanation is correct.
+2. Whether something important is missing.
+3. Whether there are conceptual errors.
+4. How to improve it.
+
+5. A quality panel with:
+   - clarity (0–10)
+   - accuracy (0–10)
+   - depth (0–10)
+   - relevance (0–10)
+   - total score (average)
+
+6. A hallucination detector:
+   - score (0–10)
+   - explanation of what seems invented
+
+7. Explain your reasoning step by step.
 """,
 
         "sv": f"""
@@ -71,11 +99,25 @@ Svara på svenska.
 SVAR FRÅN MODELL A:
 {respuesta_a_texto}
 
-Berätta:
-- Om förklaringen är korrekt.
-- Om något viktigt saknas.
-- Om det finns konceptuella fel.
-- Hur man kan förbättra svaret.
+Ge mig:
+
+1. Om förklaringen är korrekt.
+2. Om något viktigt saknas.
+3. Om det finns konceptuella fel.
+4. Hur man kan förbättra svaret.
+
+5. En kvalitetsbedömning med:
+   - tydlighet (0–10)
+   - noggrannhet (0–10)
+   - djup (0–10)
+   - relevans (0–10)
+   - totalpoäng (medelvärde)
+
+6. En hallucinationsdetektor:
+   - poäng (0–10)
+   - förklaring av vad som verkar påhittat
+
+7. Förklara ditt resonemang steg för steg.
 """
     }
 
@@ -88,8 +130,10 @@ Berätta:
     )
     tiempo_b = time.time() - start_b
 
+    texto_completo = evaluacion_b_raw["response"]
+
     return {
-        "texto": evaluacion_b_raw["response"],
+        "texto": texto_completo,
         "tiempo": tiempo_b,
         "tokens": evaluacion_b_raw.get("eval_count", 0),
         "prompt_tokens": evaluacion_b_raw.get("prompt_eval_count", 0)

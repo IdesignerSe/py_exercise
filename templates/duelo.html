@@ -106,6 +106,16 @@
                 </div>
             </div>
 
+            <!-- RAZONAMIENTO DEL MODELO B -->
+            <div class="card mt-4">
+                <div class="card-header bg-info text-dark" id="ui_reasoning_title">
+                    Razonamiento del Modelo B
+                </div>
+                <div class="card-body">
+                    <pre id="razonamientoB"></pre>
+                </div>
+            </div>
+
             <!-- IDIOMA SELECCIONADO -->
             <div class="text-muted mt-3">
                 🌐 <span id="ui_detected_language">Idioma seleccionado</span>: 
@@ -139,7 +149,6 @@
         let ultimaPregunta = "";
         let idiomaActual = localStorage.getItem("idioma") || "es";
 
-        // Traducciones
         const traducciones = {
             es: {
                 title: "Duelo entre Modelos AI",
@@ -156,6 +165,7 @@
                 detected: "Idioma seleccionado",
                 modelA: "Respuesta del Modelo A (Llama 3.1)",
                 modelB: "Evaluación del Modelo B (Qwen 0.6B)",
+                reasoning: "Razonamiento del Modelo B",
                 footer: "Proyecto IA — Flask + Ollama — IdesignerSe © 2026"
             },
             en: {
@@ -173,6 +183,7 @@
                 detected: "Selected language",
                 modelA: "Model A Response (Llama 3.1)",
                 modelB: "Model B Evaluation (Qwen 0.6B)",
+                reasoning: "Model B Reasoning",
                 footer: "AI Project — Flask + Ollama — IdesignerSe © 2026"
             },
             sv: {
@@ -190,6 +201,7 @@
                 detected: "Valt språk",
                 modelA: "Svar från Modell A (Llama 3.1)",
                 modelB: "Utvärdering av Modell B (Qwen 0.6B)",
+                reasoning: "Modell B:s resonemang",
                 footer: "AI-projekt — Flask + Ollama — IdesignerSe © 2026"
             }
         };
@@ -220,6 +232,7 @@
 
             document.getElementById("ui_modelA_title").textContent = t.modelA;
             document.getElementById("ui_modelB_title").textContent = t.modelB;
+            document.getElementById("ui_reasoning_title").textContent = t.reasoning;
 
             document.getElementById("ui_footer").textContent = t.footer;
 
@@ -234,14 +247,12 @@
             aplicarIdioma();
         });
 
-        // DARK MODE
         function toggleDarkMode() {
             const body = document.body;
             const current = body.getAttribute("data-bs-theme");
             body.setAttribute("data-bs-theme", current === "light" ? "dark" : "light");
         }
 
-        // ENVIAR PREGUNTA
         async function enviar() {
             const btnEnviar = document.getElementById("btnEnviar");
 
@@ -266,6 +277,9 @@
             document.getElementById("mensaje").innerHTML = "";
 
             btnEnviar.textContent = traducciones[idiomaActual].send + " ✔";
+            btnEnviar.disabled = false;
+            btnEnviar.classList.remove("btn-outline-primary");
+            btnEnviar.classList.add("btn-primary");
         }
 
         function actualizarResultados(data) {
@@ -282,9 +296,12 @@
             document.getElementById("promptTokensB").textContent = data.prompt_tokens_b;
 
             document.getElementById("idiomaDetectado").textContent = data.idioma;
+
+            // Por ahora mostramos el mismo texto también en razonamiento;
+            // más adelante puedes separar la parte de razonamiento si lo parseas.
+            document.getElementById("razonamientoB").textContent = data.evaluacion_b;
         }
 
-        // Reset botones secundarios
         function resetButtons() {
             const t = traducciones[idiomaActual];
 
@@ -306,7 +323,6 @@
             nuevaBtn.disabled = false;
         }
 
-        // ACEPTAR
         function aceptar() {
             const btn = document.getElementById("ui_btn_accept");
             btn.textContent = traducciones[idiomaActual].accept + " ✔";
@@ -318,7 +334,6 @@
                 `<div class="alert alert-success">✔ ${traducciones[idiomaActual].accept}</div>`;
         }
 
-        // RECHAZAR
         function rechazar() {
             const btn = document.getElementById("ui_btn_reject");
             btn.textContent = traducciones[idiomaActual].reject + " ✘";
@@ -330,7 +345,6 @@
                 `<div class="alert alert-danger">✘ ${traducciones[idiomaActual].reject}</div>`;
         }
 
-        // NUEVA RESPUESTA
         async function nuevaRespuesta() {
             const btn = document.getElementById("ui_btn_new");
             btn.textContent = traducciones[idiomaActual].new + "… 🔄";

@@ -31,13 +31,23 @@ Sé crítico pero justo.
     return evaluacion["response"]
 
 def main():
-    print("=== Paso 2: Modelo A responde ===\n")
+    print("=== Paso 4: Aprobación humana ===\n")
 
     pregunta = "Explica brevemente qué es la teoría de conjuntos."
     respuesta_a = modelo_a_responde(pregunta)
+    evaluacion_b = modelo_b_evalua(respuesta_a)
 
     print("Pregunta:", pregunta, "\n")
-    print("Respuesta del Modelo A:\n", respuesta_a)
+    print("Respuesta del Modelo A:\n", respuesta_a, "\n")
+    print("Evaluación del Modelo B:\n", evaluacion_b, "\n")
+
+    decision = input("¿Aceptar la respuesta del Modelo A? (si/no): ").strip().lower()
+
+    if decision == "si":
+        print("\n✔ Respuesta aceptada por el humano responsable.")
+    else:
+        print("\n✘ Respuesta rechazada por el humano responsable.")
+        print("Puedes pedir una nueva respuesta o terminar el proceso.")
 
 if __name__ == "__main__":
     main()

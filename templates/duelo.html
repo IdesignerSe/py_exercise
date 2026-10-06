@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Duelo entre Modelos AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+        h1 {
+            text-align: center;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        pre {
+            background: #eee;
+            padding: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+        .section-title {
+            margin-top: 30px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Duelo entre Modelos AI</h1>
+
+    <label for="pregunta">Escribe tu pregunta:</label>
+    <textarea id="pregunta"></textarea>
+    <button onclick="enviar()">Enviar</button>
+
+    <div class="section-title">Respuesta del Modelo A (Llama 3.1)</div>
+    <pre id="respuestaA"></pre>
+
+    <div class="section-title">Evaluación del Modelo B (Qwen 0.6B)</div>
+    <pre id="evaluacionB"></pre>
+</div>
+
+<script>
+    async function enviar() {
+        const pregunta = document.getElementById("pregunta").value;
+
+        const res = await fetch("/api/duelo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ pregunta })
+        });
+
+        const data = await res.json();
+
+        document.getElementById("respuestaA").textContent = data.respuesta_a;
+        document.getElementById("evaluacionB").textContent = data.evaluacion_b;
+    }
+</script>
+
+</body>
+</html>

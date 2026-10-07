@@ -31,7 +31,7 @@ Pregunta:
 
 
 # ============================================================
-# MODELO B: evalúa (Qwen 0.6B) — MULTILINGÜE + MÉTRICAS + RAZONAMIENTO
+# MODELO B: evalúa (Qwen 0.6B) — MULTILINGÜE + MÉTRICAS + RAZONAMIENTO SEPARADO
 # ============================================================
 def modelo_b_evalua(respuesta_a_texto, idioma):
 
@@ -61,7 +61,15 @@ Dame:
    - score (0–10)
    - explicación de qué parte parece inventada
 
-7. Explica tu razonamiento paso a paso.
+Primero escribe toda la EVALUACIÓN.
+Luego, en una sección separada titulada exactamente:
+RAZONAMIENTO:
+explica paso a paso:
+
+- por qué dijiste que es correcta o no
+- por qué detectaste errores
+- por qué diste esas métricas
+- cómo llegaste a tu juicio final
 """,
 
         "en": f"""
@@ -89,7 +97,15 @@ Give me:
    - score (0–10)
    - explanation of what seems invented
 
-7. Explain your reasoning step by step.
+First write the full EVALUATION.
+Then, in a separate section titled exactly:
+RAZONING:
+explain step by step:
+
+- why you said it is correct or not
+- why you detected errors
+- why you gave those metrics
+- how you reached your final judgment
 """,
 
         "sv": f"""
@@ -117,7 +133,15 @@ Ge mig:
    - poäng (0–10)
    - förklaring av vad som verkar påhittat
 
-7. Förklara ditt resonemang steg för steg.
+Skriv först hela UTVÄRDERINGEN.
+Sedan, i en separat sektion med rubriken:
+RAZONAMIENTO:
+förklarar du steg för steg:
+
+- varför du sa att det är korrekt eller inte
+- varför du hittade fel
+- varför du gav dessa poäng
+- hur du kom fram till din slutliga bedömning
 """
     }
 
@@ -132,8 +156,14 @@ Ge mig:
 
     texto_completo = evaluacion_b_raw["response"]
 
+    # Separar evaluación y razonamiento por la marca "RAZONAMIENTO:"
+    partes = texto_completo.split("RAZONAMIENTO:")
+    evaluacion = partes[0].strip()
+    razonamiento = partes[1].strip() if len(partes) > 1 else ""
+
     return {
-        "texto": texto_completo,
+        "texto": evaluacion,
+        "razonamiento": razonamiento,
         "tiempo": tiempo_b,
         "tokens": evaluacion_b_raw.get("eval_count", 0),
         "prompt_tokens": evaluacion_b_raw.get("prompt_eval_count", 0)
@@ -143,7 +173,7 @@ Ge mig:
 # ============================================================
 # MODELO C: refinador (Qwen 0.6B) — MINI RLHF COMPLETO
 # ============================================================
-def modelo_c_refina(respuesta_a, evaluacion_b, correccion_humana, idioma):
+def modelo_c_refina(respuesta_a, evaluacion_b, razonamiento_b, correccion_humana, idioma):
     prompt_refinar = f"""
 Refina la respuesta original usando:
 
@@ -158,6 +188,9 @@ RESPUESTA ORIGINAL:
 
 EVALUACIÓN DEL MODELO B:
 {evaluacion_b}
+
+RAZONAMIENTO DEL MODELO B:
+{razonamiento_b}
 
 CORRECCIÓN HUMANA:
 {correccion_humana}
@@ -205,6 +238,7 @@ def api_duelo():
         "idioma": idioma,
         "respuesta_a": modelo_a["texto"],
         "evaluacion_b": modelo_b["texto"],
+        "razonamiento_b": modelo_b["razonamiento"],
         "tiempo_a": modelo_a["tiempo"],
         "tiempo_b": modelo_b["tiempo"],
         "tokens_a": modelo_a["tokens"],
@@ -223,10 +257,11 @@ def api_refinar():
 
     respuesta_a = data["respuesta_a"]
     evaluacion_b = data["evaluacion_b"]
+    razonamiento_b = data["razonamiento_b"]
     correccion_humana = data["correccion_humana"]
     idioma = data["idioma"]
 
-    refinado = modelo_c_refina(respuesta_a, evaluacion_b, correccion_humana, idioma)
+    refinado = modelo_c_refina(respuesta_a, evaluacion_b, razonamiento_b, correccion_humana, idioma)
 
     return jsonify({
         "idioma": idioma,

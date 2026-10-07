@@ -4,65 +4,43 @@
     <meta charset="UTF-8">
     <title>Duelo entre Modelos AI</title>
 
-    <!-- Bootstrap CSS -->
-    <link 
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
-        rel="stylesheet"
-    >
-
-    <!-- Fuente moderna -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bs-body-bg);
-        }
+        body { font-family: 'Inter', sans-serif; background: var(--bs-body-bg); }
         .container-box {
-            max-width: 900px;
-            margin-top: 40px;
-            padding: 40px;
-            background: var(--bs-body-bg);
-            border-radius: 16px;
+            max-width: 900px; margin-top: 40px; padding: 40px;
+            background: var(--bs-body-bg); border-radius: 16px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.12);
         }
         pre {
-            background: var(--bs-light-bg-subtle);
-            padding: 15px;
-            border-radius: 8px;
-            white-space: pre-wrap;
+            background: var(--bs-light-bg-subtle); padding: 15px;
+            border-radius: 8px; white-space: pre-wrap;
             border: 1px solid var(--bs-border-color);
         }
-        #contador {
-            font-size: 0.9rem;
-            color: #888;
-        }
+        #contador { font-size: 0.9rem; color: #888; }
     </style>
 </head>
 
 <body data-bs-theme="light">
 
-    <!-- NAVBAR -->
     <nav class="navbar navbar-dark bg-dark mb-4">
         <div class="container d-flex justify-content-between align-items-center">
             <span class="navbar-brand mb-0 h1" id="ui_title">Duelo entre Modelos AI</span>
 
             <div class="d-flex gap-3">
-                <!-- Selector de idioma -->
                 <select id="selectorIdioma" class="form-select form-select-sm bg-dark text-white" style="width:140px;">
                     <option value="es">Español</option>
                     <option value="en">English</option>
                     <option value="sv">Svenska</option>
                 </select>
 
-                <button class="btn btn-outline-light" onclick="toggleDarkMode()">
-                    🌙 / ☀️
-                </button>
+                <button class="btn btn-outline-light" onclick="toggleDarkMode()">🌙 / ☀️</button>
             </div>
         </div>
     </nav>
 
-    <!-- CONTENIDO PRINCIPAL -->
     <div class="container d-flex justify-content-center">
         <div class="container-box">
 
@@ -70,21 +48,13 @@
 
             <label for="pregunta" class="form-label" id="ui_label_question">Escribe tu pregunta:</label>
 
-            <textarea 
-                id="pregunta" 
-                class="form-control mb-2" 
-                rows="4"
-                placeholder="Escribe aquí tu pregunta..."
-                oninput="actualizarContador()"
-            ></textarea>
+            <textarea id="pregunta" class="form-control mb-2" rows="4"
+                placeholder="Escribe aquí tu pregunta..." oninput="actualizarContador()"></textarea>
 
             <div id="contador">Caracteres: 0 | Tokens estimados: 0</div>
 
-            <button id="btnEnviar" onclick="enviar()" class="btn btn-primary btn-lg w-100 mb-4">
-                Enviar
-            </button>
+            <button id="btnEnviar" onclick="enviar()" class="btn btn-primary btn-lg w-100 mb-4">Enviar</button>
 
-            <!-- RESPUESTA A -->
             <div class="card mt-4">
                 <div class="card-header bg-primary text-white" id="ui_modelA_title">
                     Respuesta del Modelo A (Llama 3.1)
@@ -92,14 +62,18 @@
                 <div class="card-body">
                     <pre id="respuestaA"></pre>
                     <div class="text-muted mt-2">
-                        ⏱ <span id="ui_timeA">Tiempo</span>: <span id="tiempoA">-</span> s |
-                        🔢 <span id="ui_tokensA">Tokens</span>: <span id="tokensA">-</span> 
-                        (<span id="ui_promptTokensA">prompt</span>: <span id="promptTokensA">-</span>)
+                        ⏱ Tiempo: <span id="tiempoA">-</span> s |
+                        🔢 Tokens: <span id="tokensA">-</span> (prompt: <span id="promptTokensA">-</span>)
                     </div>
                 </div>
             </div>
 
-            <!-- EVALUACIÓN B -->
+            <div id="botones" class="d-flex gap-3 mt-4" style="display:none;">
+                <button onclick="aceptar()" class="btn btn-success btn-lg flex-fill" id="ui_btn_accept">Aceptar</button>
+                <button onclick="rechazar()" class="btn btn-danger btn-lg flex-fill" id="ui_btn_reject">Rechazar</button>
+                <button onclick="nuevaRespuesta()" class="btn btn-warning btn-lg flex-fill" id="ui_btn_new">Nueva respuesta</button>
+            </div>
+
             <div class="card mt-4">
                 <div class="card-header bg-warning text-dark" id="ui_modelB_title">
                     Evaluación del Modelo B (Qwen 0.6B)
@@ -107,14 +81,12 @@
                 <div class="card-body">
                     <pre id="evaluacionB"></pre>
                     <div class="text-muted mt-2">
-                        ⏱ <span id="ui_timeB">Tiempo</span>: <span id="tiempoB">-</span> s |
-                        🔢 <span id="ui_tokensB">Tokens</span>: <span id="tokensB">-</span> 
-                        (<span id="ui_promptTokensB">prompt</span>: <span id="promptTokensB">-</span>)
+                        ⏱ Tiempo: <span id="tiempoB">-</span> s |
+                        🔢 Tokens: <span id="tokensB">-</span> (prompt: <span id="promptTokensB">-</span>)
                     </div>
                 </div>
             </div>
 
-            <!-- RAZONAMIENTO DEL MODELO B -->
             <div class="card mt-4">
                 <div class="card-header bg-info text-dark" id="ui_reasoning_title">
                     Razonamiento del Modelo B
@@ -124,74 +96,65 @@
                 </div>
             </div>
 
-            <!-- CORRECCIÓN HUMANA -->
             <div class="card mt-4" id="correccionCard" style="display:none;">
-                <div class="card-header bg-secondary text-white">
-                    Corrección humana (RLHF)
-                </div>
+                <div class="card-header bg-secondary text-white">Corrección humana (RLHF)</div>
                 <div class="card-body">
                     <textarea id="correccionHumana" class="form-control mb-3" rows="3"
                         placeholder="Escribe aquí tu corrección humana..."></textarea>
 
-                    <button onclick="refinar()" class="btn btn-success w-100">
-                        Refinar (RLHF)
-                    </button>
+                    <button onclick="refinar()" class="btn btn-success w-100">Refinar (RLHF)</button>
                 </div>
             </div>
 
-            <!-- RESULTADO REFINADO -->
             <div class="card mt-4" id="refinadoCard" style="display:none;">
-                <div class="card-header bg-success text-white">
-                    Versión refinada (RLHF)
-                </div>
+                <div class="card-header bg-success text-white">Versión refinada (RLHF)</div>
                 <div class="card-body">
                     <pre id="textoRefinado"></pre>
                     <div class="text-muted mt-2">
                         ⏱ Tiempo: <span id="tiempoC">-</span> s |
-                        🔢 Tokens: <span id="tokensC">-</span>
-                        (prompt: <span id="promptTokensC">-</span>)
+                        🔢 Tokens: <span id="tokensC">-</span> (prompt: <span id="promptTokensC">-</span>)
                     </div>
                 </div>
             </div>
 
-            <!-- IDIOMA SELECCIONADO -->
             <div class="text-muted mt-3">
-                🌐 <span id="ui_detected_language">Idioma seleccionado</span>: 
-                <span id="idiomaDetectado">-</span>
+                🌐 Idioma seleccionado: <span id="idiomaDetectado">-</span>
             </div>
-
-            <!-- BOTONES DE ACCIÓN -->
-            <div id="botones" class="d-flex gap-3 mt-4" style="display:none;">
-                <button onclick="aceptar()" class="btn btn-success btn-lg flex-fill" id="ui_btn_accept">Aceptar</button>
-                <button onclick="rechazar()" class="btn btn-danger btn-lg flex-fill" id="ui_btn_reject">Rechazar</button>
-                <button onclick="nuevaRespuesta()" class="btn btn-warning btn-lg flex-fill" id="ui_btn_new">Nueva respuesta</button>
-            </div>
-
-            <!-- MENSAJE -->
-            <div id="mensaje" class="mt-3"></div>
 
         </div>
     </div>
 
-    <!-- FOOTER -->
+    <div class="modal fade" id="popupMensaje" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title" id="popupTitulo">Mensaje</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+
+          <div class="modal-body" id="popupCuerpo"></div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <footer class="text-center mt-5 mb-3 text-muted">
         <small id="ui_footer">Proyecto IA — Flask + Ollama — IdesignerSe © 2026</small>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script 
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        let ultimaPregunta = "";
         let idiomaActual = localStorage.getItem("idioma") || "es";
         let ultimaRespuestaA = "";
         let ultimaEvaluacionB = "";
+        let ultimoRazonamientoB = "";
 
-        // ============================
-        // CONTADOR DE CARACTERES Y TOKENS
-        // ============================
         function actualizarContador() {
             const texto = document.getElementById("pregunta").value;
             const chars = texto.length;
@@ -200,134 +163,48 @@
                 `Caracteres: ${chars} | Tokens estimados: ${tokens}`;
         }
 
-        // ============================
-        // TRADUCCIONES
-        // ============================
-        const traducciones = {
-            es: {
-                title: "Duelo entre Modelos AI",
-                subtitle: "Comparación entre Llama 3.1 y Qwen 0.6B",
-                question: "Escribe tu pregunta:",
-                placeholder: "Escribe aquí tu pregunta...",
-                send: "Enviar",
-                accept: "Aceptar",
-                reject: "Rechazar",
-                new: "Nueva respuesta",
-                reasoning: "Razonamiento del Modelo B",
-                detected: "Idioma seleccionado",
-                modelA: "Respuesta del Modelo A (Llama 3.1)",
-                modelB: "Evaluación del Modelo B (Qwen 0.6B)",
-                footer: "Proyecto IA — Flask + Ollama — IdesignerSe © 2026"
-            },
-            en: {
-                title: "AI Models Duel",
-                subtitle: "Comparison between Llama 3.1 and Qwen 0.6B",
-                question: "Write your question:",
-                placeholder: "Write your question here...",
-                send: "Send",
-                accept: "Accept",
-                reject: "Reject",
-                new: "New answer",
-                reasoning: "Model B Reasoning",
-                detected: "Selected language",
-                modelA: "Model A Response (Llama 3.1)",
-                modelB: "Model B Evaluation (Qwen 0.6B)",
-                footer: "AI Project — Flask + Ollama — IdesignerSe © 2026"
-            },
-            sv: {
-                title: "AI-modellernas duell",
-                subtitle: "Jämförelse mellan Llama 3.1 och Qwen 0.6B",
-                question: "Skriv din fråga:",
-                placeholder: "Skriv din fråga här...",
-                send: "Skicka",
-                accept: "Godkänn",
-                reject: "Avvisa",
-                new: "Nytt svar",
-                reasoning: "Modell B:s resonemang",
-                detected: "Valt språk",
-                modelA: "Svar från Modell A (Llama 3.1)",
-                modelB: "Utvärdering av Modell B (Qwen 0.6B)",
-                footer: "AI-projekt — Flask + Ollama — IdesignerSe © 2026"
-            }
-        };
-
-        function aplicarIdioma() {
-            const t = traducciones[idiomaActual];
-
-            document.getElementById("ui_title").textContent = t.title;
-            document.getElementById("ui_subtitle").textContent = t.subtitle;
-            document.getElementById("ui_label_question").textContent = t.question;
-            document.getElementById("pregunta").placeholder = t.placeholder;
-            document.getElementById("btnEnviar").textContent = t.send;
-
-            document.getElementById("ui_btn_accept").textContent = t.accept;
-            document.getElementById("ui_btn_reject").textContent = t.reject;
-            document.getElementById("ui_btn_new").textContent = t.new;
-
-            document.getElementById("ui_modelA_title").textContent = t.modelA;
-            document.getElementById("ui_modelB_title").textContent = t.modelB;
-            document.getElementById("ui_reasoning_title").textContent = t.reasoning;
-
-            document.getElementById("ui_detected_language").textContent = t.detected;
-            document.getElementById("ui_footer").textContent = t.footer;
-
-            document.getElementById("selectorIdioma").value = idiomaActual;
+        function mostrarPopup(titulo, mensaje) {
+            document.getElementById("popupTitulo").textContent = titulo;
+            document.getElementById("popupCuerpo").textContent = mensaje;
+            const modal = new bootstrap.Modal(document.getElementById("popupMensaje"));
+            modal.show();
         }
 
-        aplicarIdioma();
-
-        document.getElementById("selectorIdioma").addEventListener("change", () => {
-            idiomaActual = document.getElementById("selectorIdioma").value;
-            localStorage.setItem("idioma", idiomaActual);
-            aplicarIdioma();
-        });
-
-        // ============================
-        // DARK MODE
-        // ============================
-        function toggleDarkMode() {
-            const body = document.body;
-            const current = body.getAttribute("data-bs-theme");
-            body.setAttribute("data-bs-theme", current === "light" ? "dark" : "light");
-        }
-
-        // ============================
-        // ENVIAR PREGUNTA
-        // ============================
         async function enviar() {
             const btnEnviar = document.getElementById("btnEnviar");
-
-            btnEnviar.textContent = traducciones[idiomaActual].send + "… 🔄";
+            btnEnviar.textContent = "Enviando… 🔄";
             btnEnviar.disabled = true;
 
-            ultimaPregunta = document.getElementById("pregunta").value;
+            const pregunta = document.getElementById("pregunta").value;
 
             const res = await fetch("/api/duelo", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pregunta: ultimaPregunta, idioma: idiomaActual })
+                body: JSON.stringify({ pregunta, idioma: idiomaActual })
             });
 
             const data = await res.json();
 
             ultimaRespuestaA = data.respuesta_a;
             ultimaEvaluacionB = data.evaluacion_b;
+            ultimoRazonamientoB = data.razonamiento_b;
 
             actualizarResultados(data);
 
             document.getElementById("botones").style.display = "flex";
-            document.getElementById("mensaje").innerHTML = "";
             document.getElementById("correccionCard").style.display = "none";
             document.getElementById("refinadoCard").style.display = "none";
 
-            btnEnviar.textContent = traducciones[idiomaActual].send;
+            btnEnviar.textContent = "✔ Enviado";
             btnEnviar.disabled = false;
         }
 
         function actualizarResultados(data) {
+            document.getElementById("idiomaDetectado").textContent = data.idioma;
+
             document.getElementById("respuestaA").textContent = data.respuesta_a;
             document.getElementById("evaluacionB").textContent = data.evaluacion_b;
-            document.getElementById("razonamientoB").textContent = data.evaluacion_b;
+            document.getElementById("razonamientoB").textContent = data.razonamiento_b;
 
             document.getElementById("tiempoA").textContent = data.tiempo_a.toFixed(2);
             document.getElementById("tiempoB").textContent = data.tiempo_b.toFixed(2);
@@ -337,28 +214,36 @@
 
             document.getElementById("promptTokensA").textContent = data.prompt_tokens_a;
             document.getElementById("promptTokensB").textContent = data.prompt_tokens_b;
-
-            document.getElementById("idiomaDetectado").textContent = data.idioma;
         }
 
-        // ============================
-        // ACEPTAR / RECHAZAR
-        // ============================
         function aceptar() {
-            document.getElementById("mensaje").innerHTML =
-                `<div class="alert alert-success">✔ ${traducciones[idiomaActual].accept}</div>`;
+            mostrarPopup("Respuesta aceptada", "Has marcado esta respuesta como ACEPTADA ✔");
+            const btn = document.getElementById("ui_btn_accept");
+            btn.textContent = "Aceptado ✔";
+            btn.disabled = true;
         }
 
         function rechazar() {
-            document.getElementById("mensaje").innerHTML =
-                `<div class="alert alert-danger">✘ ${traducciones[idiomaActual].reject}</div>`;
-
+            mostrarPopup("Respuesta rechazada", "Has marcado esta respuesta como RECHAZADA ✘");
+            const btn = document.getElementById("ui_btn_reject");
+            btn.textContent = "Rechazado ✘";
+            btn.disabled = true;
             document.getElementById("correccionCard").style.display = "block";
         }
 
-        // ============================
-        // RLHF — REFINAR
-        // ============================
+        async function nuevaRespuesta() {
+            const btn = document.getElementById("ui_btn_new");
+            btn.textContent = "Generando… 🔄";
+            btn.disabled = true;
+
+            mostrarPopup("Nueva respuesta", "Se está generando una nueva respuesta…");
+
+            await enviar();
+
+            btn.textContent = "Generado ✔";
+            btn.disabled = false;
+        }
+
         async function refinar() {
             const correccion = document.getElementById("correccionHumana").value;
 
@@ -368,6 +253,7 @@
                 body: JSON.stringify({
                     respuesta_a: ultimaRespuestaA,
                     evaluacion_b: ultimaEvaluacionB,
+                    razonamiento_b: ultimoRazonamientoB,
                     correccion_humana: correccion,
                     idioma: idiomaActual
                 })
@@ -383,11 +269,10 @@
             document.getElementById("promptTokensC").textContent = data.prompt_tokens_c;
         }
 
-        // ============================
-        // NUEVA RESPUESTA
-        // ============================
-        async function nuevaRespuesta() {
-            enviar();
+        function toggleDarkMode() {
+            const body = document.body;
+            const current = body.getAttribute("data-bs-theme");
+            body.setAttribute("data-bs-theme", current === "light" ? "dark" : "light");
         }
     </script>
 

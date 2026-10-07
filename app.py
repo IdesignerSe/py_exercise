@@ -99,7 +99,7 @@ Give me:
 
 First write the full EVALUATION.
 Then, in a separate section titled exactly:
-RAZONING:
+RAZONAMIENTO:
 explain step by step:
 
 - why you said it is correct or not
@@ -156,10 +156,33 @@ förklarar du steg för steg:
 
     texto_completo = evaluacion_b_raw["response"]
 
-    # Separar evaluación y razonamiento por la marca "RAZONAMIENTO:"
-    partes = texto_completo.split("RAZONAMIENTO:")
-    evaluacion = partes[0].strip()
-    razonamiento = partes[1].strip() if len(partes) > 1 else ""
+    # ============================
+    # SEPARADOR ROBUSTO
+    # ============================
+    marcadores = [
+        "RAZONAMIENTO:",
+        "Razonamiento:",
+        "RAZONING:",
+        "Razoning:",
+        "Razonamiento del modelo B:",
+        "Razonamiento del Modelo B:"
+    ]
+
+    pos = -1
+    marcador_usado = None
+
+    for m in marcadores:
+        if m in texto_completo:
+            pos = texto_completo.index(m)
+            marcador_usado = m
+            break
+
+    if pos != -1:
+        evaluacion = texto_completo[:pos].strip()
+        razonamiento = texto_completo[pos + len(marcador_usado):].strip()
+    else:
+        evaluacion = texto_completo.strip()
+        razonamiento = ""
 
     return {
         "texto": evaluacion,

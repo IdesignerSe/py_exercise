@@ -140,6 +140,47 @@ Ge mig:
     }
 
 
+# ============================================================
+# MODELO C: refinador (Qwen 0.6B) — MINI RLHF COMPLETO
+# ============================================================
+def modelo_c_refina(respuesta_a, evaluacion_b, correccion_humana, idioma):
+    prompt_refinar = f"""
+Refina la respuesta original usando:
+
+- La respuesta del Modelo A
+- La evaluación del Modelo B
+- El razonamiento del Modelo B
+- La corrección humana
+- El idioma seleccionado: {idioma}
+
+RESPUESTA ORIGINAL:
+{respuesta_a}
+
+EVALUACIÓN DEL MODELO B:
+{evaluacion_b}
+
+CORRECCIÓN HUMANA:
+{correccion_humana}
+
+Genera una versión mejorada, más precisa, más clara, sin alucinaciones,
+y completamente en el idioma indicado.
+"""
+
+    start_c = time.time()
+    refinado_raw = ollama.generate(
+        model="qwen3:0.6b",
+        prompt=prompt_refinar
+    )
+    tiempo_c = time.time() - start_c
+
+    return {
+        "texto": refinado_raw["response"],
+        "tiempo": tiempo_c,
+        "tokens": refinado_raw.get("eval_count", 0),
+        "prompt_tokens": refinado_raw.get("prompt_eval_count", 0)
+    }
+
+
 # -----------------------------
 # RUTA DEL FRONT-END
 # -----------------------------
@@ -149,13 +190,13 @@ def duelo():
 
 
 # -----------------------------
-# API PARA EL FRONT-END
+# API: respuesta + evaluación
 # -----------------------------
 @app.route("/api/duelo", methods=["POST"])
 def api_duelo():
     data = request.json
     pregunta = data["pregunta"]
-    idioma = data["idioma"]  # viene del selector del frontend
+    idioma = data["idioma"]
 
     modelo_a = modelo_a_responde(pregunta, idioma)
     modelo_b = modelo_b_evalua(modelo_a["texto"], idioma)
@@ -170,6 +211,29 @@ def api_duelo():
         "tokens_b": modelo_b["tokens"],
         "prompt_tokens_a": modelo_a["prompt_tokens"],
         "prompt_tokens_b": modelo_b["prompt_tokens"]
+    })
+
+
+# -----------------------------
+# API: refinamiento RLHF
+# -----------------------------
+@app.route("/api/refinar", methods=["POST"])
+def api_refinar():
+    data = request.json
+
+    respuesta_a = data["respuesta_a"]
+    evaluacion_b = data["evaluacion_b"]
+    correccion_humana = data["correccion_humana"]
+    idioma = data["idioma"]
+
+    refinado = modelo_c_refina(respuesta_a, evaluacion_b, correccion_humana, idioma)
+
+    return jsonify({
+        "idioma": idioma,
+        "refinado": refinado["texto"],
+        "tiempo_c": refinado["tiempo"],
+        "tokens_c": refinado["tokens"],
+        "prompt_tokens_c": refinado["prompt_tokens"]
     })
 
 

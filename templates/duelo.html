@@ -33,6 +33,10 @@
             white-space: pre-wrap;
             border: 1px solid var(--bs-border-color);
         }
+        #contador {
+            font-size: 0.9rem;
+            color: #888;
+        }
     </style>
 </head>
 
@@ -65,12 +69,16 @@
             <h2 class="text-center mb-4" id="ui_subtitle">Comparación entre Llama 3.1 y Qwen 0.6B</h2>
 
             <label for="pregunta" class="form-label" id="ui_label_question">Escribe tu pregunta:</label>
+
             <textarea 
                 id="pregunta" 
-                class="form-control mb-3" 
+                class="form-control mb-2" 
                 rows="4"
                 placeholder="Escribe aquí tu pregunta..."
+                oninput="actualizarContador()"
             ></textarea>
+
+            <div id="contador">Caracteres: 0 | Tokens estimados: 0</div>
 
             <button id="btnEnviar" onclick="enviar()" class="btn btn-primary btn-lg w-100 mb-4">
                 Enviar
@@ -116,6 +124,36 @@
                 </div>
             </div>
 
+            <!-- CORRECCIÓN HUMANA -->
+            <div class="card mt-4" id="correccionCard" style="display:none;">
+                <div class="card-header bg-secondary text-white">
+                    Corrección humana (RLHF)
+                </div>
+                <div class="card-body">
+                    <textarea id="correccionHumana" class="form-control mb-3" rows="3"
+                        placeholder="Escribe aquí tu corrección humana..."></textarea>
+
+                    <button onclick="refinar()" class="btn btn-success w-100">
+                        Refinar (RLHF)
+                    </button>
+                </div>
+            </div>
+
+            <!-- RESULTADO REFINADO -->
+            <div class="card mt-4" id="refinadoCard" style="display:none;">
+                <div class="card-header bg-success text-white">
+                    Versión refinada (RLHF)
+                </div>
+                <div class="card-body">
+                    <pre id="textoRefinado"></pre>
+                    <div class="text-muted mt-2">
+                        ⏱ Tiempo: <span id="tiempoC">-</span> s |
+                        🔢 Tokens: <span id="tokensC">-</span>
+                        (prompt: <span id="promptTokensC">-</span>)
+                    </div>
+                </div>
+            </div>
+
             <!-- IDIOMA SELECCIONADO -->
             <div class="text-muted mt-3">
                 🌐 <span id="ui_detected_language">Idioma seleccionado</span>: 
@@ -148,7 +186,23 @@
     <script>
         let ultimaPregunta = "";
         let idiomaActual = localStorage.getItem("idioma") || "es";
+        let ultimaRespuestaA = "";
+        let ultimaEvaluacionB = "";
 
+        // ============================
+        // CONTADOR DE CARACTERES Y TOKENS
+        // ============================
+        function actualizarContador() {
+            const texto = document.getElementById("pregunta").value;
+            const chars = texto.length;
+            const tokens = Math.round(chars / 4);
+            document.getElementById("contador").textContent =
+                `Caracteres: ${chars} | Tokens estimados: ${tokens}`;
+        }
+
+        // ============================
+        // TRADUCCIONES
+        // ============================
         const traducciones = {
             es: {
                 title: "Duelo entre Modelos AI",
@@ -159,13 +213,10 @@
                 accept: "Aceptar",
                 reject: "Rechazar",
                 new: "Nueva respuesta",
-                time: "Tiempo",
-                tokens: "Tokens",
-                prompt: "prompt",
+                reasoning: "Razonamiento del Modelo B",
                 detected: "Idioma seleccionado",
                 modelA: "Respuesta del Modelo A (Llama 3.1)",
                 modelB: "Evaluación del Modelo B (Qwen 0.6B)",
-                reasoning: "Razonamiento del Modelo B",
                 footer: "Proyecto IA — Flask + Ollama — IdesignerSe © 2026"
             },
             en: {
@@ -177,13 +228,10 @@
                 accept: "Accept",
                 reject: "Reject",
                 new: "New answer",
-                time: "Time",
-                tokens: "Tokens",
-                prompt: "prompt",
+                reasoning: "Model B Reasoning",
                 detected: "Selected language",
                 modelA: "Model A Response (Llama 3.1)",
                 modelB: "Model B Evaluation (Qwen 0.6B)",
-                reasoning: "Model B Reasoning",
                 footer: "AI Project — Flask + Ollama — IdesignerSe © 2026"
             },
             sv: {
@@ -195,13 +243,10 @@
                 accept: "Godkänn",
                 reject: "Avvisa",
                 new: "Nytt svar",
-                time: "Tid",
-                tokens: "Tokens",
-                prompt: "prompt",
+                reasoning: "Modell B:s resonemang",
                 detected: "Valt språk",
                 modelA: "Svar från Modell A (Llama 3.1)",
                 modelB: "Utvärdering av Modell B (Qwen 0.6B)",
-                reasoning: "Modell B:s resonemang",
                 footer: "AI-projekt — Flask + Ollama — IdesignerSe © 2026"
             }
         };
@@ -219,21 +264,11 @@
             document.getElementById("ui_btn_reject").textContent = t.reject;
             document.getElementById("ui_btn_new").textContent = t.new;
 
-            document.getElementById("ui_timeA").textContent = t.time;
-            document.getElementById("ui_timeB").textContent = t.time;
-
-            document.getElementById("ui_tokensA").textContent = t.tokens;
-            document.getElementById("ui_tokensB").textContent = t.tokens;
-
-            document.getElementById("ui_promptTokensA").textContent = t.prompt;
-            document.getElementById("ui_promptTokensB").textContent = t.prompt;
-
-            document.getElementById("ui_detected_language").textContent = t.detected;
-
             document.getElementById("ui_modelA_title").textContent = t.modelA;
             document.getElementById("ui_modelB_title").textContent = t.modelB;
             document.getElementById("ui_reasoning_title").textContent = t.reasoning;
 
+            document.getElementById("ui_detected_language").textContent = t.detected;
             document.getElementById("ui_footer").textContent = t.footer;
 
             document.getElementById("selectorIdioma").value = idiomaActual;
@@ -247,19 +282,23 @@
             aplicarIdioma();
         });
 
+        // ============================
+        // DARK MODE
+        // ============================
         function toggleDarkMode() {
             const body = document.body;
             const current = body.getAttribute("data-bs-theme");
             body.setAttribute("data-bs-theme", current === "light" ? "dark" : "light");
         }
 
+        // ============================
+        // ENVIAR PREGUNTA
+        // ============================
         async function enviar() {
             const btnEnviar = document.getElementById("btnEnviar");
 
             btnEnviar.textContent = traducciones[idiomaActual].send + "… 🔄";
             btnEnviar.disabled = true;
-            btnEnviar.classList.remove("btn-primary");
-            btnEnviar.classList.add("btn-outline-primary");
 
             ultimaPregunta = document.getElementById("pregunta").value;
 
@@ -271,20 +310,24 @@
 
             const data = await res.json();
 
+            ultimaRespuestaA = data.respuesta_a;
+            ultimaEvaluacionB = data.evaluacion_b;
+
             actualizarResultados(data);
 
             document.getElementById("botones").style.display = "flex";
             document.getElementById("mensaje").innerHTML = "";
+            document.getElementById("correccionCard").style.display = "none";
+            document.getElementById("refinadoCard").style.display = "none";
 
-            btnEnviar.textContent = traducciones[idiomaActual].send + " ✔";
+            btnEnviar.textContent = traducciones[idiomaActual].send;
             btnEnviar.disabled = false;
-            btnEnviar.classList.remove("btn-outline-primary");
-            btnEnviar.classList.add("btn-primary");
         }
 
         function actualizarResultados(data) {
             document.getElementById("respuestaA").textContent = data.respuesta_a;
             document.getElementById("evaluacionB").textContent = data.evaluacion_b;
+            document.getElementById("razonamientoB").textContent = data.evaluacion_b;
 
             document.getElementById("tiempoA").textContent = data.tiempo_a.toFixed(2);
             document.getElementById("tiempoB").textContent = data.tiempo_b.toFixed(2);
@@ -296,75 +339,55 @@
             document.getElementById("promptTokensB").textContent = data.prompt_tokens_b;
 
             document.getElementById("idiomaDetectado").textContent = data.idioma;
-
-            // Por ahora mostramos el mismo texto también en razonamiento;
-            // más adelante puedes separar la parte de razonamiento si lo parseas.
-            document.getElementById("razonamientoB").textContent = data.evaluacion_b;
         }
 
-        function resetButtons() {
-            const t = traducciones[idiomaActual];
-
-            const aceptarBtn = document.getElementById("ui_btn_accept");
-            const rechazarBtn = document.getElementById("ui_btn_reject");
-            const nuevaBtn = document.getElementById("ui_btn_new");
-
-            aceptarBtn.textContent = t.accept;
-            aceptarBtn.disabled = false;
-            aceptarBtn.classList.remove("btn-outline-success");
-            aceptarBtn.classList.add("btn-success");
-
-            rechazarBtn.textContent = t.reject;
-            rechazarBtn.disabled = false;
-            rechazarBtn.classList.remove("btn-outline-danger");
-            rechazarBtn.classList.add("btn-danger");
-
-            nuevaBtn.textContent = t.new;
-            nuevaBtn.disabled = false;
-        }
-
+        // ============================
+        // ACEPTAR / RECHAZAR
+        // ============================
         function aceptar() {
-            const btn = document.getElementById("ui_btn_accept");
-            btn.textContent = traducciones[idiomaActual].accept + " ✔";
-            btn.classList.remove("btn-success");
-            btn.classList.add("btn-outline-success");
-            btn.disabled = true;
-
             document.getElementById("mensaje").innerHTML =
                 `<div class="alert alert-success">✔ ${traducciones[idiomaActual].accept}</div>`;
         }
 
         function rechazar() {
-            const btn = document.getElementById("ui_btn_reject");
-            btn.textContent = traducciones[idiomaActual].reject + " ✘";
-            btn.classList.remove("btn-danger");
-            btn.classList.add("btn-outline-danger");
-            btn.disabled = true;
-
             document.getElementById("mensaje").innerHTML =
                 `<div class="alert alert-danger">✘ ${traducciones[idiomaActual].reject}</div>`;
+
+            document.getElementById("correccionCard").style.display = "block";
         }
 
-        async function nuevaRespuesta() {
-            const btn = document.getElementById("ui_btn_new");
-            btn.textContent = traducciones[idiomaActual].new + "… 🔄";
-            btn.disabled = true;
+        // ============================
+        // RLHF — REFINAR
+        // ============================
+        async function refinar() {
+            const correccion = document.getElementById("correccionHumana").value;
 
-            const res = await fetch("/api/duelo", {
+            const res = await fetch("/api/refinar", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pregunta: ultimaPregunta, idioma: idiomaActual })
+                body: JSON.stringify({
+                    respuesta_a: ultimaRespuestaA,
+                    evaluacion_b: ultimaEvaluacionB,
+                    correccion_humana: correccion,
+                    idioma: idiomaActual
+                })
             });
 
             const data = await res.json();
 
-            actualizarResultados(data);
+            document.getElementById("refinadoCard").style.display = "block";
+            document.getElementById("textoRefinado").textContent = data.refinado;
 
-            btn.textContent = traducciones[idiomaActual].new;
-            btn.disabled = false;
+            document.getElementById("tiempoC").textContent = data.tiempo_c.toFixed(2);
+            document.getElementById("tokensC").textContent = data.tokens_c;
+            document.getElementById("promptTokensC").textContent = data.prompt_tokens_c;
+        }
 
-            document.getElementById("mensaje").innerHTML =
-                `<div class="alert alert-warning">${traducciones[idiomaActual].new}</div>`;
+        // ============================
+        // NUEVA RESPUESTA
+        // ============================
+        async function nuevaRespuesta() {
+            enviar();
         }
     </script>
 

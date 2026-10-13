@@ -159,9 +159,10 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
     
-    /* ============================
+/* ============================
    SISTEMA DE IDIOMAS
 ============================ */
 
@@ -178,25 +179,12 @@ const traducciones = {
         new: "Nueva respuesta",
         characters: "Caracteres",
         tokens_estimated: "Tokens estimados",
-
         accepted_msg: "Has marcado esta respuesta como aceptada.",
         rejected_msg: "Has marcado esta respuesta como rechazada.",
         new_generating: "Se está generando una nueva respuesta…",
-
         reasoning: "Razonamiento del Modelo B",
-        refining_title: "Refinando respuesta",
-        refining_msg: "El modelo está generando una versión mejorada…",
-
         modelA: "Respuesta del Modelo A (Llama 3.1)",
         modelB: "Evaluación del Modelo B (Qwen 0.6B)",
-
-        human_correction: "Corrección humana (RLHF)",
-        refined_version: "Versión refinada (RLHF)",
-
-        time_label: "Tiempo",
-        tokens_label: "Tokens",
-        prompt_tokens_label: "Tokens del prompt",
-
         selected_language: "Idioma seleccionado:",
         footer: "Proyecto IA — Flask + Ollama — IdesignerSe © 2026"
     },
@@ -213,25 +201,12 @@ const traducciones = {
         new: "New answer",
         characters: "Characters",
         tokens_estimated: "Estimated tokens",
-
         accepted_msg: "You have marked this answer as accepted.",
         rejected_msg: "You have marked this answer as rejected.",
         new_generating: "A new answer is being generated…",
-
         reasoning: "Model B Reasoning",
-        refining_title: "Refining answer",
-        refining_msg: "The model is generating an improved version…",
-
         modelA: "Model A Response (Llama 3.1)",
         modelB: "Model B Evaluation (Qwen 0.6B)",
-
-        human_correction: "Human correction (RLHF)",
-        refined_version: "Refined version (RLHF)",
-
-        time_label: "Time",
-        tokens_label: "Tokens",
-        prompt_tokens_label: "Prompt tokens",
-
         selected_language: "Selected language:",
         footer: "AI Project — Flask + Ollama — IdesignerSe © 2026"
     },
@@ -248,30 +223,17 @@ const traducciones = {
         new: "Nytt svar",
         characters: "Tecken",
         tokens_estimated: "Beräknade tokens",
-
         accepted_msg: "Du har markerat detta svar som godkänt.",
         rejected_msg: "Du har markerat detta svar som avvisat.",
         new_generating: "Ett nytt svar genereras…",
-
         reasoning: "Modell B:s resonemang",
-        refining_title: "Förfinar svaret",
-        refining_msg: "Modellen skapar en förbättrad version…",
-
         modelA: "Svar från Modell A (Llama 3.1)",
         modelB: "Utvärdering av Modell B (Qwen 0.6B)",
-
-        human_correction: "Mänsklig korrigering (RLHF)",
-        refined_version: "Förfinad version (RLHF)",
-
-        time_label: "Tid",
-        tokens_label: "Tokens",
-        prompt_tokens_label: "Prompt-tokens",
-
         selected_language: "Valt språk:",
         footer: "AI-projekt — Flask + Ollama — IdesignerSe © 2026"
     }
 };
-    
+
 let idiomaActual = localStorage.getItem("idioma") || "es";
 
 function aplicarIdioma() {
@@ -289,13 +251,6 @@ function aplicarIdioma() {
     document.getElementById("ui_modelA_title").textContent = t.modelA;
     document.getElementById("ui_modelB_title").textContent = t.modelB;
     document.getElementById("ui_reasoning_title").textContent = t.reasoning;
-
-    document.getElementById("ui_human_correction").textContent = t.human_correction;
-    document.getElementById("ui_refined_version").textContent = t.refined_version;
-
-    document.getElementById("ui_time_label").textContent = t.time_label;
-    document.getElementById("ui_tokens_label").textContent = t.tokens_label;
-    document.getElementById("ui_prompt_tokens_label").textContent = t.prompt_tokens_label;
 
     document.getElementById("ui_footer").textContent = t.footer;
 
@@ -418,6 +373,7 @@ async function nuevaRespuesta() {
     btn.textContent = traducciones[idiomaActual].new + " ✔";
     btn.disabled = false;
 }
+
 async function refinar() {
     const correccion = document.getElementById("correccionHumana").value;
 
